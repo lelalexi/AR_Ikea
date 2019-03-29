@@ -225,9 +225,10 @@ class RoomViewController: UIViewController, ARSCNViewDelegate {
     }
     // Draw the appropriate plane over the detected surface.
     drawPlaneNode(on: node, for: planeAnchor)
-    consolePlaneIdentificator(planeAnchor)
+    //consolePlaneIdentificator(planeAnchor)
   }
-  
+  /** Only For testing
+    */
   fileprivate func consolePlaneIdentificator(_ planeAnchor: ARPlaneAnchor) {
     let planeType: String
     if planeAnchor.alignment == .horizontal {
@@ -241,11 +242,16 @@ class RoomViewController: UIViewController, ARSCNViewDelegate {
   // This delegate method gets called whenever the node for
   // an *existing* AR anchor is updated.
   func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-    // Once again, we only want to deal with plane anchors.
+    // Once again, we only want to deal with plane anchors. (Thats Why we have a Guard to provide that)
+    guard let planeAnchor = anchor as? ARPlaneAnchor else {return}
+    
 
     // Remove any children this node may have.
-
+    node.enumerateChildNodes { (childNode, _) in
+      childNode.removeFromParentNode()
+    }
     // Update the plane over this surface.
+    drawPlaneNode(on: node, for: planeAnchor)
 
   }
 
@@ -280,9 +286,12 @@ class RoomViewController: UIViewController, ARSCNViewDelegate {
   // an existing AR anchor is removed.
   func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
     // We only want to deal with plane anchors.
-
+    guard anchor is ARPlaneAnchor else {return}
+    
     // Remove any children this node may have.
-
+    node.enumerateChildNodes{ (childNode, _) in
+      childNode.removeFromParentNode()
+    }
   }
 
 
