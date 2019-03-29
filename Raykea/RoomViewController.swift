@@ -201,9 +201,11 @@ class RoomViewController: UIViewController, ARSCNViewDelegate {
         let xCoord = CGFloat(x) / CGFloat(screenDivisions) * viewWidth
         let point = CGPoint(x: xCoord, y: yCoord)
 
-        // Perform hit test for planes.
-
-
+        // Perform hit test for planes (This determine if the plane that we re looking alows furniture).
+        let hitTest = sceneView.hitTest(point, types: .estimatedHorizontalPlane)
+        if hitTest.isEmpty {
+          return true
+        }
       }
     }
     return false
