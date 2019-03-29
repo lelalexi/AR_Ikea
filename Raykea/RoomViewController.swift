@@ -86,6 +86,7 @@ class RoomViewController: UIViewController, ARSCNViewDelegate {
 
   func createARConfiguration() -> ARConfiguration {
     let config = ARWorldTrackingConfiguration()  // Use "6 degrees of freedom" tracking
+    //inicializo la alineacion con el mundo, inicializando el eje y con el entido de la gravedad
     config.worldAlignment = .gravity
     //activo la deteccion de planos horizontales y verticales
     config.planeDetection = [.horizontal, .vertical]
@@ -217,9 +218,17 @@ class RoomViewController: UIViewController, ARSCNViewDelegate {
   func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
     // We only want to deal with plane anchors, which encapsulate
     // the position, orientation, and size, of a detected surface.
-
+    guard let planeAnchor = anchor as? ARPlaneAnchor else {
+      return
+    }
     // Draw the appropriate plane over the detected surface.
-
+    let planeType: String
+    if planeAnchor.alignment == .horizontal {
+      planeType = "Horizontal"
+    } else {
+      planeType = "vertical"
+    }
+    print("Plano \(planeType) detectado en \(planeAnchor.center.x),\(planeAnchor.center.y), \(planeAnchor.center.z)")
   }
 
   // This delegate method gets called whenever the node for
