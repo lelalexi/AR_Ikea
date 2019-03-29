@@ -215,6 +215,8 @@ class RoomViewController: UIViewController, ARSCNViewDelegate {
 
   // This delegate method gets called whenever the node for
   // a *new* AR anchor is added to the scene.
+  
+  
   func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
     // We only want to deal with plane anchors, which encapsulate
     // the position, orientation, and size, of a detected surface.
@@ -222,6 +224,11 @@ class RoomViewController: UIViewController, ARSCNViewDelegate {
       return
     }
     // Draw the appropriate plane over the detected surface.
+    drawPlaneNode(on: node, for: planeAnchor)
+    consolePlaneIdentificator(planeAnchor)
+  }
+  
+  fileprivate func consolePlaneIdentificator(_ planeAnchor: ARPlaneAnchor) {
     let planeType: String
     if planeAnchor.alignment == .horizontal {
       planeType = "Horizontal"
@@ -245,13 +252,28 @@ class RoomViewController: UIViewController, ARSCNViewDelegate {
   func drawPlaneNode(on node: SCNNode, for planeAnchor: ARPlaneAnchor) {
     // Create a plane node with the same position and size
     // as the detected plane.
-
+    
+    //We need to obtain the size of the plane that we found
+    let planeNode = SCNNode(geometry: SCNPlane(width: CGFloat(planeAnchor.extent.x), height: CGFloat(planeAnchor.extent.z)) )
+    planeNode.position = SCNVector3(planeAnchor.center.x,planeAnchor.center.y,planeAnchor.center.z)
+    planeNode.geometry?.firstMaterial?.isDoubleSided = true
+    
     // Align the plane with the anchor.
-
+    planeNode.eulerAngles = SCNVector3(-Double.pi / 2, 0, 0)
+    
+    
     // Give the plane node the appropriate surface.
-
+    if planeAnchor.alignment == .horizontal {
+      planeNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "grid")
+      planeNode.name = "horizontal"
+    } else {
+      planeNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: "ray")
+      planeNode.name = "Vertical"
+    }
+    
     // Add the plane node to the scene.
-
+    node.addChildNode(planeNode)
+    appState = .readyToFurnish
   }
 
   // This delegate method gets called whenever the node corresponding to
